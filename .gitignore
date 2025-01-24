@@ -1,0 +1,36 @@
+.idea
+# byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# tests and coverage
+*.pytest_cache
+.coverage
+
+# persistence & logs
+*.db
+*.log
+*.sqlite3
+
+# venv
+env
+venv
+.venv
+
+# other
+.DS_Store
+
+# sphinx docs
+_build
+_static
+_templates
+
+# javascript
+package-lock.json
+
+static/assets/node_modules
+static/assets/yarn.lock
+static/assets/.temp
+!/.pytest_cache/
+.env
+pytest_cache/
