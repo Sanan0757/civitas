@@ -1,32 +1,44 @@
-# from enum import StrEnum
+import uuid
 
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
-
+from sqlalchemy import Column, Integer, String, JSON
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import UUID
+
+from geoalchemy2 import Geometry
 
 Base = declarative_base()
 
 
-class User(Base):
-    __tablename__ = "users"
+class Amenity(Base):
+    __tablename__ = "amenities"
 
-    # class Role(StrEnum):
-    #     ADMIN = "admin"
-    #     USER = "user"
-    #     GUEST = "guest"
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False,
+    )
+    overpass_id = Column(Integer, unique=True, nullable=False)
+    name = Column(String, nullable=True)
+    amenity_type = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    opening_hours = Column(String, nullable=True)
+    geometry = Column(Geometry("POINT"), nullable=False)  # Geometry column for points
 
 
-# one to one relationship
 class Building(Base):
     __tablename__ = "buildings"
 
-
-class BuildingDetail(Base):
-    __tablename__ = "building_details"
-
-    building_id = Column(Integer, ForeignKey("buildings.id"), primary_key=True)
-    building = relationship("Building", back_populates="detail")
-    detail = relationship("BuildingDetail", back_populates="building")
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False,
+    )
+    overpass_id = Column(Integer, unique=True, nullable=False)
+    information = Column(JSON, nullable=False)  # Stores metadata as a JSON object
+    geometry = Column(
+        Geometry("POLYGON"), nullable=False
+    )  # Geometry column for polygons

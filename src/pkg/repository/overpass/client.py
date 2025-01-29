@@ -7,7 +7,7 @@ from shapely.geometry.point import Point
 from shapely.geometry.polygon import Polygon
 from shapely.io import to_geojson
 
-from src.pkg.models.dto import Amenity, Building
+from src.pkg.models.models import Amenity, Building
 
 
 class Client:
@@ -26,7 +26,7 @@ class Client:
                 "Bounding box must be a tuple with four coordinates: (south, west, north, east)."
             )
 
-    async def get_buildings(self) -> List[Building]:
+    async def extract_buildings(self) -> List[Building]:
         """
         Fetch all buildings and their metadata within the bounding box.
 
@@ -51,10 +51,9 @@ class Client:
                 geometry_string=to_geojson(Polygon(nodes)),
             )
             buildings.append(building)
-
         return buildings
 
-    async def get_amenities(self) -> List[Amenity]:
+    async def extract_amenities(self) -> List[Amenity]:
         """
         Fetch all amenities (restaurants, cafés, banks, pharmacies, shops, and offices) within the bounding box.
 
