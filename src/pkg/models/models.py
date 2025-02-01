@@ -1,18 +1,21 @@
-from typing import Optional, List
+from datetime import datetime
+from typing import Optional
 
-from pydantic import BaseModel, Json
+from pydantic import BaseModel, Field
 
 
 class Amenity(BaseModel):
-    overpass_id: int
+    osm_id: int
     name: Optional[str]
     amenity_type: Optional[str]
     address: Optional[str]
     opening_hours: Optional[str]
-    geometry_string: str  # Point
+    geometry: str  # Point
+    updated_at: datetime = Field(default=datetime.now())
+    updated_by: Optional[str] = None
 
 
 class Building(BaseModel):
-    overpass_id: int
+    osm_id: int
     metadata: dict
-    geometry_string: str  # Polygon
+    geometry: str  # Polygon

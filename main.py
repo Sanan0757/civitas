@@ -15,6 +15,11 @@ async def main():
         choices=["web", "etl"],
         help="The app to run: 'web' for the web app, 'etl' for the ETL app.",
     )
+    parser.add_argument(
+        "--automigrate",
+        action="store_true",
+        help="Run Alembic migrations before starting the app",
+    )
     args = parser.parse_args()
 
     # Run the appropriate app based on the argument

@@ -46,9 +46,9 @@ class Client:
                 (node.lon, node.lat) for node in way.nodes
             ]  # Ensure correct (lon, lat) order
             building = Building(
-                overpass_id=way.id,
+                osm_id=way.id,
                 metadata=way.tags,
-                geometry_string=to_geojson(Polygon(nodes)),
+                geometry=to_geojson(Polygon(nodes)),
             )
             buildings.append(building)
         return buildings
@@ -75,12 +75,12 @@ class Client:
         for node in response.nodes:
             tags = node.tags
             amenity = Amenity(
-                overpass_id=node.id,
+                osm_id=node.id,
                 name=tags.get("name"),
                 amenity_type=tags.get("amenity"),
                 address=tags.get("addr:street"),
                 opening_hours=tags.get("opening_hours"),
-                geometry_string=to_geojson(
+                geometry=to_geojson(
                     Point(node.lat, node.lon),
                 ),
             )

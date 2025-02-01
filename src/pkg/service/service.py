@@ -13,14 +13,14 @@ class Service(ServiceInterface):
         buildings = await self.repository.extract_buildings()
         await self.repository.load_buildings(buildings)
         # except Exception as e:
-        #     print(f"Error syncing buildings: {e}")
+        #     print(f"syncing buildings failed. Error: {e}")
 
     async def sync_amenities(self):
         try:
             amenities = await self.repository.extract_amenities()
             await self.repository.load_amenities(amenities)
         except Exception as e:
-            print(f"Error syncing amenities: {e}")
+            print(f"syncing amenities failed. Error: {e}")
 
     async def get_buildings(self) -> List[Building]:
         return await self.repository.get_buildings()
