@@ -9,7 +9,10 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     ENV: str = "dev"
+    HOST: str = "0.0.0.0"
+    PORT: int = 8080
     LOG_LEVEL: str = "DEBUG"
+    PROJECT_NAME: str = "Civitas"
     DATABASE_PG_URL: PostgresDsn = "postgresql://neondb_owner:npg_jrUpozuT7g0y@ep-black-sky-a2vsl2a2-pooler.eu-central-1.aws.neon.tech/neondb"
     BOUNDING_BOX: tuple[float, ...] = (34.9500, 14.1800, 36.0800, 14.6000)
 

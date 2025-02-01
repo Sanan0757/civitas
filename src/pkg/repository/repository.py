@@ -1,9 +1,12 @@
+import logging
 from typing import List
 
 from src.pkg.deps.interfaces import RepositoryInterface
 from src.pkg.models.models import Amenity, Building
 from src.pkg.repository.overpass.client import Client
 from src.pkg.repository.persistence.queries import PersistenceRepository
+
+logger = logging.getLogger(__name__)
 
 
 class Repository(RepositoryInterface):
@@ -31,6 +34,7 @@ class Repository(RepositoryInterface):
         await self._persistence_repo.update_metadata(building.id, building.metadata)
 
     async def load_amenities(self, amenities: List[Amenity]):
+        logger.info(f"Loading {len(amenities)} amenities...")
         for amenity in amenities:
             await self._persistence_repo.load_amenity(
                 amenity.osm_id,
@@ -44,7 +48,7 @@ class Repository(RepositoryInterface):
             )
 
     async def load_buildings(self, buildings: List[Building]):
-        print(f"Loading buildings {len(buildings)}")
+        logger.info(f"Loading {len(buildings)} buildings...")
         for building in buildings:
             await self._persistence_repo.load_building(
                 building.osm_id, building.metadata, building.geometry

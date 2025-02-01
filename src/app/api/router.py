@@ -2,7 +2,7 @@ from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
-api_router = APIRouter()
+api_router = APIRouter(prefix="/api")
 
 # function for enabling CORS on web server
 def setup_middleware(app: FastAPI):

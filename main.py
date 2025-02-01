@@ -1,13 +1,23 @@
 import argparse
 import asyncio
+import logging
 
-import uvicorn
+from src.app import create_app
+from src.pkg.config import get_settings
 
-from src.app.web import create_web_app
-from src.app.etl import create_etl_app
+settings = get_settings()
+
+logging.basicConfig(
+    format="{asctime} - {levelname} - {message}",
+    style="{",
+    datefmt="%Y-%m-%d %H:%M",
+    level=settings.LOG_LEVEL,
+)
+logger = logging.getLogger(__name__)
 
 
-async def main():
+def main():
+    """Main entry point for the application."""
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Run the desired app.")
     parser.add_argument(
@@ -21,17 +31,20 @@ async def main():
         help="Run Alembic migrations before starting the app",
     )
     args = parser.parse_args()
+    app = create_app(settings)
 
-    # Run the appropriate app based on the argument
+    # Run the selected application
     if args.app == "web":
-        print("Starting the web app...")
-        app = create_web_app()
-        uvicorn.run(app)
+        logger.info("Starting the web app...")
+        app.serve()
     elif args.app == "etl":
-        print("Starting the ETL app...")
-        app = create_etl_app()
-        await app.sync()
+        logger.info("Starting the ETL process...")
+        asyncio.run(app.sync())
+        logger.info("ETL process completed.")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        main()
+    except KeyboardInterrupt:
+        logger.warning("Shutdown requested. Exiting...")
