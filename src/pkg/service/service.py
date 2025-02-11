@@ -37,6 +37,14 @@ class Service(ServiceInterface):
         except Exception as e:
             print(f"syncing amenities failed. Error: {e}")
 
+    async def sync_admin_boundaries(self):
+        try:
+            boundaries = await self._fetch_boundaries()
+            ab = await self._overpass_client.extract_admin_boundaries(boundaries)
+            await self._repository.load_admin_boundaries(ab)
+        except Exception as e:
+            print(f"syncing amenities failed. Error: {e}")
+
     async def get_buildings(self) -> List[Building]:
         await self._fetch_boundaries()
         return await self._repository.get_buildings()

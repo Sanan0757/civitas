@@ -31,5 +31,10 @@ async def get_route(request: Request):
     return await request.app.state.service.get_route()
 
 
+@api_router.get("/admin-boundaries")
+async def get_admin_boundaries(request: Request):
+    return await request.app.state.service.get_admin_boundaries()
+
+
 def setup_static(app: FastAPI):
     app.mount("/static", StaticFiles(directory="static"), name="static")

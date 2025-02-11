@@ -117,7 +117,7 @@ function addAmenitiesLayer(map, geojson) {
 }
 
 
-fetch('http://localhost:8080/api/amenities')
+fetch('https://civitas-471b.onrender.com/api/amenities')
     .then(response => response.json())
     .then(features => {
         const geojson = {
