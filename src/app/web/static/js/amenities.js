@@ -15,9 +15,9 @@ function findClosestAmenity(properties, category) {
             popup = new mapboxgl.Popup()
                 .setLngLat(data.amenity.geometry.coordinates)
                 .setHTML(`
-                    <strong>Closest ${category}:</strong> ${data.amenity.name}<br>
+                    <strong>Closest ${category}:</strong> ${data.amenity.properties.name}<br>
                     <strong>Distance:</strong> ${data.route.distance}m<br>
-                    <strong>Time:</strong> ${data.route.duration} min walking
+                    <strong>Time:</strong> ${data.route.duration/60} min walking
                 `)
                 .addTo(map);
 
