@@ -20,12 +20,23 @@ https://civitas-471b.onrender.com/web/map
 
 ## Architecture
 
+### Two Application Modes
+Civitas can run in two different modes using a **single entry point** (`main.py`) with **command-line arguments**:
+
+1. **Web App (`web`)**: Runs the interactive web application.
+2. **ETL Process (`etl`)**: Executes the data extraction, transformation, and loading (ETL) pipeline.
+
+![img.png](docs/img/img_1.png)
+
+This approach allows for **code reuse** across both modes, including shared logic, models, and configurations.
+
+
 ### Domain-Driven Design (DDD)
 Civitas follows the **Domain-Driven Design** approach, structuring the codebase into meaningful business domains. The core logic is encapsulated in domain entities, keeping the system modular and scalable.
 
 ### Hexagonal Architecture
 The project implements **Hexagonal Architecture**, also known as the **Ports and Adapters Pattern**, to keep business logic independent from external dependencies such as databases or APIs. This approach allows easier testing and better maintainability.
-![img.png](img.png)
+![img.png](docs/img/img.png)
 - **Adapters**: Interfaces for interacting with external services (e.g., Overpass, Terra)
 - **Application Layer**: Handles use cases and business logic
 - **Infrastructure Layer**: Database and external service implementations

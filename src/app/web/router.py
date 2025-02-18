@@ -99,10 +99,22 @@ async def delete_amenity(request: Request, amenity_id: str):
     return {"message": "Amenity deleted."}
 
 
-@web_router.get("/map", response_class=HTMLResponse)
+@web_router.get("/map/amenities", response_class=HTMLResponse)
 async def map_page(request: Request):
     return templates.TemplateResponse(
-        "map/map.html",
+        "map/amenities.html",
+        {
+            "request": request,
+            "mapbox_access_token": request.app.state.cfg.MAPBOX_ACCESS_TOKEN,
+            "api_url": request.app.state.cfg.API_URL,
+        },
+    )
+
+
+@web_router.get("/map/maintenance", response_class=HTMLResponse)
+async def maintenance_page(request: Request):
+    return templates.TemplateResponse(
+        "map/maintenance.html",
         {
             "request": request,
             "mapbox_access_token": request.app.state.cfg.MAPBOX_ACCESS_TOKEN,
