@@ -5,7 +5,7 @@ Civitas is a geospatial data-driven application that leverages **Domain-Driven D
 
 ## Preview
 (It takes some time to load the map first time, but after that it will be momentary since both server side and client side cache are implemented)
-https://civitas-471b.onrender.com/web/map
+https://civitas-471b.onrender.com/web/map/amenities
 
 
 ## Technology Stack
