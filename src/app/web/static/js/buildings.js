@@ -1,59 +1,45 @@
+const defaultColor = '#888888';
+const selectedBuildingColor = '#ff0000'; // Highlight color for selected buildings
+const categoryColors = window.categoryColors || {}; // Ensure categoryColors is defined
+
+let selectedBuildingId = null; // Store the selected building ID
+
 function addBuildingsLayer(geojson) {
     if (map.getSource('buildings-source')) {
         map.getSource('buildings-source').setData(geojson);
         return;
     }
-    map.addSource('buildings-source', {type: 'geojson', data: geojson});
 
+    map.addSource('buildings-source', { type: 'geojson', data: geojson });
+
+    // Set map pitch for 3D effect
+    map.easeTo({ pitch: 60, bearing: -20 });
+
+    // Add 3D buildings layer
     map.addLayer({
         id: 'buildings-layer',
-        type: 'fill',
+        type: 'fill-extrusion',
         source: 'buildings-source',
         paint: {
-            'fill-color': [
+            'fill-extrusion-color': [
                 'case',
-                ['has', 'amenity_category'], // Check if 'amenity_category' exists
-                [
-                    'case',
-                    ['has', ['get', 'amenity_category'], ['literal', categoryColors]], //Check if the amenity_category is in categoryColors
-                    [
-                        'get', ['get', 'amenity_category'], ['literal', categoryColors] // Directly get the color
-                    ],
-                    '#888888' // Default color if no 'amenity_category' is in categoryColors
-                ],
-                '#888888' // Default color if no 'amenity_category'
+                ['==', ['get', 'id'], ['literal', selectedBuildingId]], selectedBuildingColor, // Highlight selected
+                ['match',
+                    ['get', 'amenity_category'],
+                    ...Object.entries(categoryColors).flatMap(([key, value]) => [key, value.color]),
+                    defaultColor
+                ]
             ],
-            'fill-opacity': 0.5
+            'fill-extrusion-height': ['get', 'height'], // Use building height from GeoJSON
+            'fill-extrusion-base': 0,
+            'fill-extrusion-opacity': 0.8
         }
-    });
-
-    map.addLayer({
-        id: 'buildings-outline',
-        type: 'line',
-        source: 'buildings-source',
-        paint: {'line-color': '#000', 'line-width': 1}
     });
 
     map.on('click', 'buildings-layer', (e) => {
         const properties = e.features[0].properties;
+        selectBuilding(properties.id);
         displayBuildingInfo(properties);
-
-        map.setPaintProperty('buildings-layer', 'fill-color', [
-            'case',
-            ['==', ['get', 'id'], properties.id],
-            '#ff6600', // Highlight selected building
-            [
-                'case',
-                ['has', 'amenity_category'], // Check if 'amenity_category' exists
-                [
-                    'case',
-                    ['has', ['get', 'amenity_category'], ['literal', categoryColors]], // Check if in categoryColors
-                    ['get', ['get', 'amenity_category'], ['literal', categoryColors]], // Get category color
-                    '#888888' // Default if category not in categoryColors
-                ],
-                '#888888' // Default if no 'amenity_category'
-            ]
-        ]);
     });
 
     map.on('mouseenter', 'buildings-layer', () => {
@@ -64,6 +50,21 @@ function addBuildingsLayer(geojson) {
         map.getCanvas().style.cursor = '';
     });
 }
+
+
+function selectBuilding(buildingId) {
+    selectedBuildingId = buildingId;
+    map.setPaintProperty('buildings-layer', 'fill-color', [
+        'case',
+        ['==', ['get', 'id'], ['literal', selectedBuildingId]], selectedBuildingColor, // Highlight selected
+        ['match',
+            ['get', 'amenity_category'],
+            ...Object.entries(categoryColors).flatMap(([key, value]) => [key, value.color]),
+            defaultColor
+        ]
+    ]);
+}
+
 
 function displayBuildingInfo(properties) {
     const sidebar = document.getElementById("building-info");
@@ -77,18 +78,17 @@ function displayBuildingInfo(properties) {
         Object.keys(categoryColors).forEach(cat => {
             if (cat !== "Residential") {
                 const button = document.createElement("button");
-                button.textContent = `Find Closest ${cat}`;
+                button.textContent = `Find Closest ${categoryColors[cat].label}`;
                 button.onclick = () => findClosestAmenity(properties, cat);
                 sidebar.appendChild(button);
             }
         });
 
     } else {
-        // Fetch amenity details if not a residential building
         fetch(`/buildings/${properties.id}/amenity`)
             .then(response => response.json())
             .then(data => {
-                sidebar.innerHTML = `<h3>${category}</h3>`; // Show category name
+                sidebar.innerHTML = `<h3>${category}</h3>`;
 
                 Object.keys(data).forEach(key => {
                     const value = data[key] || "N/A";
@@ -99,8 +99,7 @@ function displayBuildingInfo(properties) {
                     label.textContent = key.replace(/_/g, " ").toUpperCase();
 
                     if (key === "information") {
-                        const input = document.createElement("input");
-                        input.type = "text";
+                        const input = document.createElement("textarea");
                         input.value = JSON.stringify(value, null, 2);
                         input.dataset.key = key;
                         input.disabled = true;
@@ -141,17 +140,17 @@ function saveBuildingInfo(buildingId, input) {
 
         fetch(`/buildings/${buildingId}/amenity`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({information: updatedInfo})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ information: updatedInfo })
         })
-            .then(response => {
-                if (!response.ok) throw new Error("Failed to save");
-                alert("Changes saved successfully!");
-            })
-            .catch(error => {
-                console.error("Save error:", error);
-                alert("Error saving changes.");
-            });
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to save");
+            alert("Changes saved successfully!");
+        })
+        .catch(error => {
+            console.error("Save error:", error);
+            alert("Error saving changes.");
+        });
     } catch (error) {
         alert("Invalid JSON format");
     }

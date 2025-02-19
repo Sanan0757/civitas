@@ -194,7 +194,7 @@ class PersistenceRepository:
         Update the maintenance status of a building.
         """
         async with self.db.session() as session:
-            building = await session.get(Building, building_id)
+            building = await session.get(BuildingModel, building_id)
             if building:
                 building.requires_maintenance = building_update.requires_maintenance
                 building.information = building_update.information

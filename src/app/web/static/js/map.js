@@ -1,21 +1,15 @@
-const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v12',
-    center: [14.4551924, 35.9052445],
-    zoom: 10
-});
-
-function findClosestAmenity(properties, category) {
-    fetch(API_URL + `/buildings/${properties.id}/closest/${encodeURIComponent(category)}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            alert(`Closest ${category}: ${data.amenity.name}, Distance: ${data.route.distance}m, Time: ${data.route.duration}min walking`);
-            showRoute(data.route.geometry);
-        })
-        .catch(error => console.error(`Error fetching closest ${category}:`, error));
+// Initialize Map
+function initMap(container) {
+    return new mapboxgl.Map({
+        container: container,
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [14.4551924, 35.9052445],
+        zoom: 10
+    });
 }
 
+
+// Function to show route
 function showRoute(geometry) {
     if (typeof geometry === "string") {
         geometry = JSON.parse(geometry);
@@ -41,37 +35,24 @@ function showRoute(geometry) {
     });
 }
 
-getCachedData().then(cachedData => {
-    if (cachedData) {
-        console.log("Using cached data.");
-        addBuildingsLayer(cachedData);
-    } else {
-        console.log("Fetching fresh data.");
-        fetchAndCacheData(addBuildingsLayer);
+function createLegend(titleText, categoryColors) {
+    const legend = document.createElement('div');
+    legend.className = 'legend';
+
+    const title = document.createElement('h3');
+    title.textContent = titleText
+    legend.appendChild(title);
+    for (const [_, category] of Object.entries(categoryColors)) {
+        const item = document.createElement('div');
+        const key = document.createElement('span');
+        key.className = 'legend-key';
+        key.style.backgroundColor = category.color;
+
+        const value = document.createElement('span');
+        value.textContent = category.label;
+        item.appendChild(key);
+        item.appendChild(value);
+        legend.appendChild(item);
     }
-});
-
-const legend = document.createElement('div');
-legend.className = 'legend';
-
-const title = document.createElement('h3');
-title.textContent = 'Building Categories';
-legend.appendChild(title);
-
-for (const [category, color] of Object.entries(categoryColors)) {
-    const item = document.createElement('div');
-    const key = document.createElement('span');
-    key.className = 'legend-key';
-    key.style.backgroundColor = color;
-
-    const value = document.createElement('span');
-    value.textContent = category;
-    item.appendChild(key);
-    item.appendChild(value);
-    legend.appendChild(item);
+    return legend; // Return the legend element
 }
-
-
-map.on('load', () => {
-    document.getElementById('map').parentNode.appendChild(legend); // Append legend to the map's parent
-});

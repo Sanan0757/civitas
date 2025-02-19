@@ -82,6 +82,7 @@ class Building(BaseModel):
             "updated_at": self.updated_at.isoformat(),
             "updated_by": self.updated_by,
             "amenity_category": amenity_category,
+            "information": self.information,
         }
 
         return {
@@ -103,7 +104,6 @@ class BuildingUpdate(BaseModel):
     information: Dict[str, Any]
     requires_maintenance: bool
     updated_by: Optional[str]
-    amenity_id: Optional[uuid.UUID]
 
 
 class RouteGeometryDistance(BaseModel):
@@ -113,5 +113,5 @@ class RouteGeometryDistance(BaseModel):
 
 
 class ClosestAmenityResponse(BaseModel):
-    amenity: Optional[Amenity]
-    route: Optional[RouteGeometryDistance]
+    amenity: Dict[str, Any]  # Amenity as GeoJSON
+    route: RouteGeometryDistance

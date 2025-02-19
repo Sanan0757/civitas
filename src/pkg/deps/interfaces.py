@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from typing import List
+from typing import List, Optional
 
 from src.pkg.models import (
     Amenity,
@@ -84,5 +84,5 @@ class ServiceInterface(ABC):
     @abstractmethod
     async def get_closest_amenity(
         self, building_id: str, category: str
-    ) -> ClosestAmenityResponse:
+    ) -> Optional[ClosestAmenityResponse]:
         raise NotImplementedError
